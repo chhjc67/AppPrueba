@@ -95,7 +95,7 @@ namespace ConsoleAppPrueba
             while ((ss = myStreamReader.ReadLine()) != null)
                 Console.WriteLine(ss);
 
-            path = @"https://cdn.pixabay.com/photo/2020/07/02/07/06/goldcrest-5361996_960_720.jpg";
+            path = @"C:\Users\chhjc\source\repos\chhjc67\AppPrueba\ConsoleAppPrueba\Descarga.jpg";
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
             fileInfo = new FileInfo(path);
