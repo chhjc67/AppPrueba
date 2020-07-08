@@ -1,0 +1,28 @@
+<?xml version='1.0'?>
+<!-- Este documento XML representa el inventario de coches -->
+<coches>
+    <coche marca="BMW">
+        <modelo>520</modelo>
+        <potencia>125</potencia>
+    </coche>
+    <coche marca="BMW">
+        <modelo>525</modelo>
+        <potencia>135</potencia>
+    </coche>
+    <coche marca="Citroen">
+        <modelo>C3</modelo>
+        <potencia>75</potencia>
+    </coche>
+    <coche marca="Citroen">
+        <modelo>C4</modelo>
+        <potencia>115</potencia>
+    </coche>
+    <coche marca="Citroen">
+        <modelo>C5</modelo>
+        <potencia>135</potencia>
+    </coche>
+    <coche marca="Audi">
+        <modelo>Q7</modelo>
+        <potencia>145</potencia>
+    </coche>
+</coches>
