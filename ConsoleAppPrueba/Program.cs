@@ -50,10 +50,10 @@ namespace ConsoleAppPrueba
 
             HashSet<Person> employee = new HashSet<Person>()
             {
-                new Person("Julissa", "123-45-678", 100),
-                new Person("Maria", "524-35-754", 200),
-                new Person("Julissa", "123-45-678", 150),
-                new Person("Andrea", "254250352", 150)
+                new Person("John", "123-45-678", 100),
+                new Person("Nassy", "524-35-754", 200),
+                new Person("John", "123-45-678", 150),
+                new Person("Nassy", "254250352", 150)
             };
 
             foreach (var item in employee)
@@ -66,7 +66,7 @@ namespace ConsoleAppPrueba
             foreach (var prop in t.GetProperties())
                 Console.WriteLine(" {0} ({1})", prop.Name, prop.PropertyType.Name);
 
-            employee.First(u => u.LastName.Equals("Andrea") && u.SSN.Equals("254-25-0352")).Quantity = 205;
+            employee.First(u => u.LastName.Equals("John") && u.SSN.Equals("254-25-0352")).Quantity = 205;
             employee.RemoveWhere(u => u.LastName.Equals("Maria"));
             try
             {
@@ -83,7 +83,7 @@ namespace ConsoleAppPrueba
             Console.WriteLine("---------");
 
             // FileStream
-            string path = @"D:\VisualStudio\Projects\Ejemplos\AppPrueba\ConsoleAppPrueba\Andrea.txt";
+            string path = @"C:\Users\chhjc\source\repos\chhjc67\AppPrueba\ConsoleAppPrueba\Archivo.txt";
             FileInfo fileInfo = new FileInfo(path);
             FileStream myFileStream = new FileStream(path, FileMode.Open);
             byte[] ByteArray = new byte[Convert.ToInt32(fileInfo.Length)];
@@ -148,8 +148,8 @@ namespace ConsoleAppPrueba
                     Street="Av Caraca",
                     City="Bogota",
                     Scores= new List<int> {88, 94, 65, 91}},
-                new Student {First="Andrea",
-                    Last="Javela",
+                new Student {First="John",
+                    Last="Kennedy",
                     Street="Av Paris",
                     City="Ibaque",
                     Scores= new List<int> {88, 94, 65, 91}},
@@ -288,7 +288,7 @@ namespace ConsoleAppPrueba
             Console.WriteLine(MyStoutBuilder);
             Console.ReadLine();
 
-            var teacherAct = new Teacher() { First = "Julissa", Last = "Javela", City = "Bogotá" };
+            var teacherAct = new Teacher() { First = "John", Last = "Kennedy", City = "Barcelona" };
             //se instancias mediante un delegado Action
             Action method = teacherAct.ToConsole;
             method();

@@ -49,7 +49,7 @@ namespace WpfApplication1
             this.ComboBox1.DataContext = MyDataList;
             this.ComboBox2.DataContext = MyDataList;
 
-            String original = "Julissa Andrea Javela Valencia";
+            String original = "John Kennedy";
             //var result = Encryptor.Encode(original, Encryptor.Process("keypass"));
             //this.textBox1.Text = result;
             //this.textBox2.Text = Encryptor.Decode(result, Encryptor.Process("keypass"));
