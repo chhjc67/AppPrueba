@@ -33,8 +33,8 @@ namespace ConsoleAppPrueba
 
         static void Main(string[] args)
         {
-            //Prueba01();
-            Prueba02();
+            Prueba01();
+            //Prueba02();
             //Prueba03();
             //Prueba04();
             //Prueba05();
@@ -66,7 +66,7 @@ namespace ConsoleAppPrueba
             foreach (var prop in t.GetProperties())
                 Console.WriteLine(" {0} ({1})", prop.Name, prop.PropertyType.Name);
 
-            employee.First(u => u.LastName.Equals("John") && u.SSN.Equals("254-25-0352")).Quantity = 205;
+            employee.First(u => u.LastName.Equals("Nassy") && u.SSN.Equals("254-25-0352")).Quantity = 205;
             employee.RemoveWhere(u => u.LastName.Equals("Maria"));
             try
             {
@@ -95,7 +95,7 @@ namespace ConsoleAppPrueba
             while ((ss = myStreamReader.ReadLine()) != null)
                 Console.WriteLine(ss);
 
-            path = @"D:\Mis documentos\Mis imágenes\IMG_20190310_215000793.jpg";
+            path = @"https://cdn.pixabay.com/photo/2020/07/02/07/06/goldcrest-5361996_960_720.jpg";
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
             fileInfo = new FileInfo(path);
@@ -631,7 +631,7 @@ namespace ConsoleAppPrueba
                 });
                 Task<string[]> child2 = Task<string[]>.Factory.StartNew(() =>
                 {
-                    string path = @"D:\Mis documentos\";
+                    string path = @"C:\Users\chhjc\source\repos\chhjc67";
                     string[] files = System.IO.Directory.GetFiles(path);
                     var result = (from file in files.AsParallel()
                                     let info = new System.IO.FileInfo(file)
