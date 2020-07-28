@@ -45,6 +45,9 @@ namespace ConsoleAppPrueba
         #region Prueba01() // Definición de variable
         static void Prueba01() 
         {
+            (string, int) xx = MetodoTuple("Texto");
+            Console.WriteLine("Tuple valor: {0} y {1}", xx.Item1, xx.Item2);
+
             var pathBase = AppDomain.CurrentDomain.BaseDirectory;
             var result = Regex.IsMatch("a_A1-", "[^0-9a-zA-Z_]+");
 
@@ -126,6 +129,12 @@ namespace ConsoleAppPrueba
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
             Console.WriteLine(CultureResources.StringResource.StringTest);
         }
+
+        static (string, int) MetodoTuple(string texto)
+        {
+            return (texto, texto.Length);
+        }
+
         #endregion
 
         #region Prueba02() // Lambda expression // Delegados // Linq // Expression<Func<>> // Xml)
