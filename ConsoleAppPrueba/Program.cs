@@ -1,4 +1,9 @@
-﻿using iText.IO.Font.Constants;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using iText.IO.Font.Constants;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -33,13 +38,14 @@ namespace ConsoleAppPrueba
 
         static void Main(string[] args)
         {
-            Prueba01();
+            //Prueba01();
             //Prueba02();
             //Prueba03();
             //Prueba04();
             //Prueba05();
             //Prueba06();
             //Prueba07();
+            Prueba08();
         }
 
         #region Prueba01() // Definición de variable
@@ -839,11 +845,19 @@ namespace ConsoleAppPrueba
             new Program().CreatePdf(DEST2);
         }
 
+        static void Prueba08() //Se utiliza la libreria "DocumentFormat.OpenXml" para general un archivo Excel 
+        {
+            GeneratedClass x = new GeneratedClass();
+            x.CreateDocument("D:\\Test1.xlsx");
+            ReportWithChart y = new ReportWithChart();
+            y.CreateDocument("D:\\Test2.xlsx");
+        }
+
         private void ManipulatePdf(String dest)
         {
             PdfDocument pdfDoc = new PdfDocument(new PdfWriter(dest));
             Document doc = new Document(pdfDoc);
-            Table table = new Table(UnitValue.CreatePercentArray(8)).UseAllAvailableWidth();
+            iText.Layout.Element.Table table = new iText.Layout.Element.Table(UnitValue.CreatePercentArray(8)).UseAllAvailableWidth();
 
             for (int i = 0; i < 17; i++)
             {
@@ -1291,4 +1305,680 @@ namespace ConsoleAppPrueba
         public System.Threading.Timer TimerReference;
         public bool TimerCanceled;
     }
+
+    #region Clase de la Prueba08
+    class GeneratedClass
+    {
+        public void CreateDocument(string filePath)
+        {
+            using (SpreadsheetDocument document = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
+            {
+                WorkbookPart workbookPart = document.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
+                WorksheetPart worksheetPart1 = workbookPart.AddNewPart<WorksheetPart>();
+                WorksheetPart worksheetPart2 = workbookPart.AddNewPart<WorksheetPart>();
+                worksheetPart1.Worksheet = new Worksheet();
+                worksheetPart2.Worksheet = new Worksheet();
+                WorkbookStylesPart workbookStylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                workbookStylesPart.Stylesheet = GenerateStylesheet();
+                workbookStylesPart.Stylesheet.Save();
+                Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                Sheet sheet1 = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart1), SheetId = 1, Name = "Sheet1" };
+                Sheet sheet2 = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart2), SheetId = 2, Name = "Sheet2" };
+                sheets.Append(sheet1);
+                sheets.Append(sheet2);
+                workbookPart.Workbook.Save();
+                TestContent1(worksheetPart1);
+                worksheetPart1.Worksheet.Save();
+                TestContent2(worksheetPart2);
+                worksheetPart2.Worksheet.Save();
+            }
+        }
+
+        private DocumentFormat.OpenXml.Spreadsheet.Cell ConstructCell(string value, CellValues dataType, uint styleIndex = 0)
+        {
+            return new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellValue = new CellValue(value),
+                DataType = new EnumValue<CellValues>(dataType),
+                StyleIndex = styleIndex,
+            };
+        }
+
+        private Stylesheet GenerateStylesheet()
+        {
+            Stylesheet styleSheet = null;
+            Fonts fonts = new Fonts(
+                new Font(new FontSize() { Val = 10 }), // Index 0 - default
+                new Font(new FontSize() { Val = 10 },
+                    new Bold(),
+                    new Color() { Rgb = "000000" }) // Index 1 - header
+                );
+            Fills fills = new Fills(
+                new Fill(new PatternFill() { PatternType = PatternValues.None }), // Index 0 - default
+                new Fill(new PatternFill() { PatternType = PatternValues.Gray125 }), // Index 1 - default
+                new Fill(new PatternFill(TranslateForeground(System.Drawing.Color.DodgerBlue))
+                { PatternType = PatternValues.Solid }), // Index 2 - header
+                new Fill(new PatternFill(TranslateForeground(System.Drawing.Color.WhiteSmoke))
+                { PatternType = PatternValues.Solid }) // Index 3 - body
+                );
+            Borders borders = new Borders(
+                    new Border(), // index 0 default
+                    new Border( // index 1 black border
+                        new LeftBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new RightBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new TopBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new BottomBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new DiagonalBorder())
+                );
+            CellFormats cellFormats = new CellFormats(
+                    new CellFormat(), // default
+                    new CellFormat { FontId = 0, FillId = 0, BorderId = 1, ApplyBorder = true }, // body
+                    new CellFormat { FontId = 1, FillId = 2, BorderId = 1, ApplyFill = true }, // header
+                    new CellFormat { FontId = 0, FillId = 3, BorderId = 1, ApplyBorder = true } // body
+                );
+            styleSheet = new Stylesheet(fonts, fills, borders, cellFormats);
+
+            return styleSheet;
+        }
+
+        private static ForegroundColor TranslateForeground(System.Drawing.Color fillColor)
+        {
+            return new ForegroundColor()
+            {
+                Rgb = new HexBinaryValue()
+                {
+                    Value =
+                        System.Drawing.ColorTranslator.ToHtml(
+                        System.Drawing.Color.FromArgb(
+                            fillColor.A,
+                            fillColor.R,
+                            fillColor.G,
+                            fillColor.B)).Replace("#", "")
+                }
+            };
+        }
+
+        private void TestContent1(WorksheetPart worksheetPart)
+        {
+            // Setting up columns
+            Columns columns = new Columns(
+                    new Column // Id column
+                    {
+                        Min = 1,
+                        Max = 1,
+                        Width = 4,
+                        CustomWidth = true
+                    },
+                    new Column // Name and Birthday columns
+                    {
+                        Min = 2,
+                        Max = 3,
+                        Width = 15,
+                        CustomWidth = true
+                    },
+                    new Column // Salary column
+                    {
+                        Min = 4,
+                        Max = 4,
+                        Width = 8,
+                        CustomWidth = true
+                    });
+            worksheetPart.Worksheet.AppendChild(columns);
+            List<Employee> employees = Employees.EmployeesList;
+            SheetData sheetData = worksheetPart.Worksheet.AppendChild(new SheetData());
+            // Constructing header
+            Row row = new Row();
+            row.Append(
+                ConstructCell("Id", CellValues.String, 2),
+                ConstructCell("Name", CellValues.String, 2),
+                ConstructCell("Birth Date", CellValues.String, 2),
+                ConstructCell("Salary", CellValues.String, 2));
+            // Insert the header row to the Sheet Data
+            sheetData.AppendChild(row);
+            // Inserting each employee
+            uint styleIndex = 1;
+            Int32 count = 0;
+
+            foreach (var employee in employees)
+            {
+                if (count % 2 == 0)
+                    styleIndex = 1;
+                else
+                    styleIndex = 3;
+
+                row = new Row();
+                row.Append(
+                    ConstructCell(employee.Id.ToString(), CellValues.Number, styleIndex),
+                    ConstructCell(employee.Name, CellValues.String, styleIndex),
+                    ConstructCell(employee.DOB.ToString("yyyy/MM/dd"), CellValues.String, styleIndex),
+                    ConstructCell(employee.Salary.ToString(), CellValues.Number, styleIndex));
+                sheetData.AppendChild(row);
+                count++;
+            }
+        }
+
+        private void TestContent2(WorksheetPart worksheetPart)
+        {
+            SheetData sheetData = worksheetPart.Worksheet.AppendChild(new SheetData());
+            Row row1 = new Row();
+            DocumentFormat.OpenXml.Spreadsheet.Cell cell1 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellReference = "A1",
+                DataType = CellValues.String,
+                CellValue = new CellValue("Valor 1")
+            };
+            DocumentFormat.OpenXml.Spreadsheet.Cell cell2 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellReference = "B1",
+                DataType = CellValues.String,
+                CellValue = new CellValue("Valor 2"),
+            };
+            DocumentFormat.OpenXml.Spreadsheet.Cell cell3 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellReference = "C1",
+                DataType = CellValues.String,
+                CellValue = new CellValue("Total"),
+            };
+            row1.Append(cell1, cell2, cell3);
+            sheetData.Append(row1);
+            row1 = new Row() { RowIndex = 2 };
+            DocumentFormat.OpenXml.Spreadsheet.Cell cell4 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellReference = "A2",
+                DataType = CellValues.Number,
+                CellValue = new CellValue("2500.5")
+            };
+            DocumentFormat.OpenXml.Spreadsheet.Cell cell5 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellReference = "B2",
+                DataType = CellValues.Number,
+                CellValue = new CellValue("528")
+            };
+            DocumentFormat.OpenXml.Spreadsheet.Cell cell6 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellReference = "C2",
+                DataType = CellValues.Number,
+                CellFormula = new CellFormula("SUM(A2:B2)")
+            };
+            row1.Append(cell4, cell5, cell6);
+            sheetData.Append(row1);
+        }
+    }
+
+    class ReportWithChart
+    {
+        public void CreateDocument(string fileName)
+        {
+            List<Employee> employees = Employees.EmployeesList;
+
+            using (SpreadsheetDocument document = SpreadsheetDocument.Create(fileName, SpreadsheetDocumentType.Workbook))
+            {
+                WorkbookPart workbookPart = document.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
+                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                worksheetPart.Worksheet = new Worksheet();
+                Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Students" };
+                SheetData sheetData = worksheetPart.Worksheet.AppendChild(new SheetData());
+                // Add drawing part to WorksheetPart
+                DrawingsPart drawingsPart = worksheetPart.AddNewPart<DrawingsPart>();
+                worksheetPart.Worksheet.Append(new Drawing() { Id = worksheetPart.GetIdOfPart(drawingsPart) });
+                worksheetPart.Worksheet.Save();
+                drawingsPart.WorksheetDrawing = new WorksheetDrawing();
+                sheets.Append(sheet);
+                workbookPart.Workbook.Save();
+                // Add a new chart and set the chart language
+                ChartPart chartPart = drawingsPart.AddNewPart<ChartPart>();
+                chartPart.ChartSpace = new ChartSpace();
+                chartPart.ChartSpace.AppendChild(new EditingLanguage() { Val = "en-US" });
+                Chart chart = chartPart.ChartSpace.AppendChild(new Chart());
+                chart.AppendChild(new AutoTitleDeleted() { Val = true }); // We don't want to show the chart title
+                // Create a new Clustered Column Chart
+                PlotArea plotArea = chart.AppendChild(new PlotArea());
+                Layout layout = plotArea.AppendChild(new Layout());
+                BarChart barChart = plotArea.AppendChild(new BarChart(
+                        new BarDirection() { Val = new EnumValue<BarDirectionValues>(BarDirectionValues.Column) },
+                        new BarGrouping() { Val = new EnumValue<BarGroupingValues>(BarGroupingValues.Clustered) },
+                        new VaryColors() { Val = false }
+                    ));
+                // Constructing header
+                Row row = new Row();
+                int rowIndex = 1;
+                row.AppendChild(ConstructCell(string.Empty, CellValues.String));
+
+                foreach (var month in Months.Short)
+                    row.AppendChild(ConstructCell(month, CellValues.String));
+
+                // Insert the header row to the Sheet Data
+                sheetData.AppendChild(row);
+                rowIndex++;
+
+                // Create chart series
+                for (int i = 0; i < employees.Count; i++)
+                {
+                    BarChartSeries barChartSeries = barChart.AppendChild(new BarChartSeries(
+                        new Index() { Val = (uint)i },
+                        new Order() { Val = (uint)i },
+                        new SeriesText(new NumericValue() { Text = employees[i].Name })
+                    ));
+
+                    // Adding category axis to the chart
+                    CategoryAxisData categoryAxisData = barChartSeries.AppendChild(new CategoryAxisData());
+                    // Category
+                    // Constructing the chart category
+                    string formulaCat = "Students!$B$1:$G$1";
+                    StringReference stringReference = categoryAxisData.AppendChild(new StringReference()
+                    {
+                        Formula = new DocumentFormat.OpenXml.Drawing.Charts.Formula() { Text = formulaCat }
+                    });
+                    StringCache stringCache = stringReference.AppendChild(new StringCache());
+                    stringCache.Append(new PointCount() { Val = (uint)Months.Short.Length });
+
+                    for (int j = 0; j < Months.Short.Length; j++)
+                        stringCache.AppendChild(new NumericPoint() { Index = (uint)j }).Append(new NumericValue(Months.Short[j]));
+                }
+
+                var chartSeries = barChart.Elements<BarChartSeries>().GetEnumerator();
+
+                for (int i = 0; i < employees.Count; i++)
+                {
+                    row = new Row();
+                    row.AppendChild(ConstructCell(employees[i].Name, CellValues.String));
+                    chartSeries.MoveNext();
+                    string formulaVal = string.Format("Students!$B${0}:$G${0}", rowIndex);
+                    DocumentFormat.OpenXml.Drawing.Charts.Values values = chartSeries.Current.AppendChild(new DocumentFormat.OpenXml.Drawing.Charts.Values());
+                    NumberReference numberReference = values.AppendChild(new NumberReference()
+                    {
+                        Formula = new DocumentFormat.OpenXml.Drawing.Charts.Formula() { Text = formulaVal }
+                    });
+                    NumberingCache numberingCache = numberReference.AppendChild(new NumberingCache());
+                    numberingCache.Append(new PointCount() { Val = (uint)Months.Short.Length });
+
+                    for (uint j = 0; j < employees[i].Values.Length; j++)
+                    {
+                        var value = employees[i].Values[j];
+                        row.AppendChild(ConstructCell(value.ToString(), CellValues.Number));
+                        numberingCache.AppendChild(new NumericPoint() { Index = j }).Append(new NumericValue(value.ToString()));
+                    }
+
+                    sheetData.AppendChild(row);
+                    rowIndex++;
+                }
+
+                barChart.AppendChild(new DataLabels(
+                                    new ShowLegendKey() { Val = false },
+                                    new ShowValue() { Val = false },
+                                    new ShowCategoryName() { Val = false },
+                                    new ShowSeriesName() { Val = false },
+                                    new ShowPercent() { Val = false },
+                                    new ShowBubbleSize() { Val = false }
+                                ));
+                barChart.Append(new AxisId() { Val = 48650112u });
+                barChart.Append(new AxisId() { Val = 48672768u });
+
+                // Adding Category Axis
+                plotArea.AppendChild(
+                    new CategoryAxis(
+                        new AxisId() { Val = 48650112u },
+                        new Scaling(new DocumentFormat.OpenXml.Drawing.Charts.Orientation() { Val = new EnumValue<DocumentFormat.OpenXml.Drawing.Charts.OrientationValues>(DocumentFormat.OpenXml.Drawing.Charts.OrientationValues.MinMax) }),
+                        new Delete() { Val = false },
+                        new AxisPosition() { Val = new EnumValue<AxisPositionValues>(AxisPositionValues.Bottom) },
+                        new TickLabelPosition() { Val = new EnumValue<TickLabelPositionValues>(TickLabelPositionValues.NextTo) },
+                        new CrossingAxis() { Val = 48672768u },
+                        new Crosses() { Val = new EnumValue<CrossesValues>(CrossesValues.AutoZero) },
+                        new AutoLabeled() { Val = true },
+                        new LabelAlignment() { Val = new EnumValue<LabelAlignmentValues>(LabelAlignmentValues.Center) }
+                    ));
+
+                // Adding Value Axis
+                plotArea.AppendChild(
+                    new ValueAxis(
+                        new AxisId() { Val = 48672768u },
+                        new Scaling(new DocumentFormat.OpenXml.Drawing.Charts.Orientation() { Val = new EnumValue<DocumentFormat.OpenXml.Drawing.Charts.OrientationValues>(DocumentFormat.OpenXml.Drawing.Charts.OrientationValues.MinMax) }),
+                        new Delete() { Val = false },
+                        new AxisPosition() { Val = new EnumValue<AxisPositionValues>(AxisPositionValues.Left) },
+                        new MajorGridlines(),
+                        new DocumentFormat.OpenXml.Drawing.Charts.NumberingFormat()
+                        {
+                            FormatCode = "General",
+                            SourceLinked = true
+                        },
+                        new TickLabelPosition() { Val = new EnumValue<TickLabelPositionValues>(TickLabelPositionValues.NextTo) },
+                        new CrossingAxis() { Val = 48650112u },
+                        new Crosses() { Val = new EnumValue<CrossesValues>(CrossesValues.AutoZero) },
+                        new CrossBetween() { Val = new EnumValue<CrossBetweenValues>(CrossBetweenValues.Between) }
+                    ));
+
+                chart.Append(
+                        new PlotVisibleOnly() { Val = true },
+                        new DisplayBlanksAs() { Val = new EnumValue<DisplayBlanksAsValues>(DisplayBlanksAsValues.Gap) },
+                        new ShowDataLabelsOverMaximum() { Val = false }
+                    );
+                chartPart.ChartSpace.Save();
+
+                // Positioning the chart on the spreadsheet
+                TwoCellAnchor twoCellAnchor = drawingsPart.WorksheetDrawing.AppendChild(new TwoCellAnchor());
+
+                twoCellAnchor.Append(new DocumentFormat.OpenXml.Drawing.Spreadsheet.FromMarker(
+                        new ColumnId("0"),
+                        new ColumnOffset("0"),
+                        new RowId((rowIndex + 2).ToString()),
+                        new RowOffset("0")
+                    ));
+
+                twoCellAnchor.Append(new DocumentFormat.OpenXml.Drawing.Spreadsheet.ToMarker(
+                        new ColumnId("8"),
+                        new ColumnOffset("0"),
+                        new RowId((rowIndex + 12).ToString()),
+                        new RowOffset("0")
+                    ));
+
+                // Append GraphicFrame to TwoCellAnchor
+                GraphicFrame graphicFrame = twoCellAnchor.AppendChild(new GraphicFrame());
+                graphicFrame.Macro = string.Empty;
+
+                graphicFrame.Append(new NonVisualGraphicFrameProperties(
+                        new NonVisualDrawingProperties()
+                        {
+                            Id = 2u,
+                            Name = "Sample Chart"
+                        },
+                        new NonVisualGraphicFrameDrawingProperties()
+                    ));
+
+                graphicFrame.Append(new DocumentFormat.OpenXml.Drawing.Spreadsheet.Transform(
+                        new DocumentFormat.OpenXml.Drawing.Offset() { X = 0L, Y = 0L },
+                        new DocumentFormat.OpenXml.Drawing.Extents() { Cx = 0L, Cy = 0L }
+                    ));
+
+                graphicFrame.Append(new DocumentFormat.OpenXml.Drawing.Graphic(
+                        new DocumentFormat.OpenXml.Drawing.GraphicData(
+                                new ChartReference() { Id = drawingsPart.GetIdOfPart(chartPart) }
+                            )
+                        { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" }
+                    ));
+                twoCellAnchor.Append(new ClientData());
+                drawingsPart.WorksheetDrawing.Save();
+                worksheetPart.Worksheet.Save();
+            }
+        }
+
+        private DocumentFormat.OpenXml.Spreadsheet.Cell ConstructCell(string value, CellValues dataType)
+        {
+            return new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            {
+                CellValue = new CellValue(value),
+                DataType = new EnumValue<CellValues>(dataType),
+            };
+        }
+    }
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime DOB { get; set; }
+        public decimal Salary { get; set; }
+        public byte[] Values { get; set; }
+    }
+
+    public struct Months
+    {
+        public static string[] Short = {
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun"
+            };
+    }
+
+    public sealed class Employees
+    {
+        static List<Employee> _employees;
+        const int COUNT = 15;
+
+        public static List<Employee> EmployeesList
+        {
+            private set { }
+            get
+            {
+                return _employees;
+            }
+        }
+
+        static Employees()
+        {
+            _employees = new List<Employee>();
+            Random random = new Random();
+
+            for (int i = 0; i < COUNT; i++)
+            {
+                _employees.Add(new Employee()
+                {
+                    Id = i,
+                    Name = "Employee " + i,
+                    DOB = new DateTime(1999, 1, 1).AddMonths(i),
+                    Salary = random.Next(100, 10000) + 0.5m,
+                    Values = (i % 2 == 0 ? new byte[] { 10, 25, 30, 15, 20, 19 } : new byte[] { 20, 15, 26, 30, 10, (byte)random.Next(1, 20) })
+                });
+            }
+        }
+    }
+
+    //public class CustomStylesheet : Stylesheet
+    //{
+    //    public CustomStylesheet()
+    //    {
+    //        var cellStyleFormats = new CellStyleFormats();
+    //        var cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = 0,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0
+    //        };
+    //        cellStyleFormats.Append(cellFormat);
+    //        cellStyleFormats.Count =
+    //           UInt32Value.FromUInt32((uint)cellStyleFormats.ChildElements.Count);
+
+    //        uint iExcelIndex = 164;
+    //        var numberingFormats = new NumberingFormats();
+    //        var cellFormats = new CellFormats();
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = 0,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        var nformatDateTime = new NumberingFormat
+    //        {
+    //            NumberFormatId = UInt32Value.FromUInt32(iExcelIndex++),
+    //            FormatCode = StringValue.FromString("dd/mm/yyyy hh:mm:ss")
+    //        };
+    //        numberingFormats.Append(nformatDateTime);
+    //        var nformat4Decimal = new NumberingFormat
+    //        {
+    //            NumberFormatId = UInt32Value.FromUInt32(iExcelIndex++),
+    //            FormatCode = StringValue.FromString("#,##0.0000")
+    //        };
+    //        numberingFormats.Append(nformat4Decimal);
+    //        var nformat2Decimal = new NumberingFormat
+    //        {
+    //            NumberFormatId = UInt32Value.FromUInt32(iExcelIndex++),
+    //            FormatCode = StringValue.FromString("#,##0.00")
+    //        };
+    //        numberingFormats.Append(nformat2Decimal);
+    //        var nformatForcedText = new NumberingFormat
+    //        {
+    //            NumberFormatId = UInt32Value.FromUInt32(iExcelIndex),
+    //            FormatCode = StringValue.FromString("@")
+    //        };
+    //        numberingFormats.Append(nformatForcedText);
+    //        // index 1
+    //        // Cell Standard Date format 
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = 14,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 2
+    //        // Cell Standard Number format with 2 decimal placing
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = 4,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+
+    //        cellFormats.Append(cellFormat);
+    //        // Index 3
+    //        // Cell Date time custom format
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformatDateTime.NumberFormatId,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 4
+    //        // Cell 4 decimal custom format
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformat4Decimal.NumberFormatId,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 5
+    //        // Cell 2 decimal custom format
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformat2Decimal.NumberFormatId,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 6
+    //        // Cell forced number text custom format
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformatForcedText.NumberFormatId,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 7
+    //        // Cell text with font 12 
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformatForcedText.NumberFormatId,
+    //            FontId = 1,
+    //            FillId = 0,
+    //            BorderId = 0,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 8
+    //        // Cell text
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformatForcedText.NumberFormatId,
+    //            FontId = 0,
+    //            FillId = 0,
+    //            BorderId = 1,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 9
+    //        // Coloured 2 decimal cell text
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformat2Decimal.NumberFormatId,
+    //            FontId = 1,
+    //            FillId = 3,
+    //            BorderId = 2,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 10
+    //        // Coloured cell text
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformatForcedText.NumberFormatId,
+    //            FontId = 0,
+    //            FillId = 2,
+    //            BorderId = 2,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        // Index 11
+    //        // Coloured cell text
+    //        cellFormat = new CellFormat
+    //        {
+    //            NumberFormatId = nformatForcedText.NumberFormatId,
+    //            FontId = 1,
+    //            FillId = 3,
+    //            BorderId = 2,
+    //            FormatId = 0,
+    //            ApplyNumberFormat = BooleanValue.FromBoolean(true)
+    //        };
+    //        cellFormats.Append(cellFormat);
+    //        numberingFormats.Count =
+    //          UInt32Value.FromUInt32((uint)numberingFormats.ChildElements.Count);
+    //        cellFormats.Count = UInt32Value.FromUInt32((uint)cellFormats.ChildElements.Count);
+    //        this.Append(numberingFormats);
+    //        this.Append(cellStyleFormats);
+    //        this.Append(cellFormats);
+    //        var css = new CellStyles();
+    //        var cs = new CellStyle
+    //        {
+    //            Name = StringValue.FromString("Normal"),
+    //            FormatId = 0,
+    //            BuiltinId = 0
+    //        };
+    //        css.Append(cs);
+    //        css.Count = UInt32Value.FromUInt32((uint)css.ChildElements.Count);
+    //        this.Append(css);
+    //        var dfs = new DifferentialFormats { Count = 0 };
+    //        this.Append(dfs);
+    //        var tss = new TableStyles
+    //        {
+    //            Count = 0,
+    //            DefaultTableStyle = StringValue.FromString("TableStyleMedium9"),
+    //            DefaultPivotStyle = StringValue.FromString("PivotStyleLight16")
+    //        };
+    //        this.Append(tss);
+    //    }
+    //}
+    #endregion
 }
