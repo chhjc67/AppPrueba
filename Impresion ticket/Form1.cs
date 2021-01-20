@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-using ComplementVisualCSharp;
+using TicketPrinting;
 
-namespace WindowsFormsApplication1
+namespace TicketPrinting
 {
     public partial class Form1 : Form
     {

@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication1
+﻿namespace TicketPrinting
 {
     partial class Form1
     {
