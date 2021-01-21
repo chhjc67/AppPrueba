@@ -27,7 +27,7 @@ namespace TicketPrinting
                 
                 CreaTicket Ticket1 = new CreaTicket(pd.PrinterSettings.PrinterName);
                 Ticket1.AbreCajon();  //abre el cajon
-                Ticket1.TextoCentro("Venta mostrador"); // imprime en el centro "Venta mostrador"
+                Ticket1.TextoCentro("Venta mostrador Ñ"); // imprime en el centro "Venta mostrador"
                 Ticket1.LineasGuion(); // imprime una linea de guiones
                 Ticket1.EncabezadoVenta(); // imprime encabezados
                 Ticket1.AgregaArticulo(descripcion, cantidad, precio, total); //imprime una linea de descripcion
