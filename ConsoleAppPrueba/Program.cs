@@ -38,21 +38,18 @@ namespace ConsoleAppPrueba
         static void Main(string[] args)
         {
             //Prueba01();
-            //Prueba02();
+            Prueba02();
             //Prueba03();
             //Prueba04();
             //Prueba05();
             //Prueba06();
             //Prueba07();
-            Prueba08();
+            //Prueba08();
         }
 
         #region Prueba01() // Definición de variable
         static void Prueba01() 
         {
-            (string, int) xx = MetodoTuple("Texto");
-            Console.WriteLine("Tuple valor: {0} y {1}", xx.Item1, xx.Item2);
-
             var pathBase = AppDomain.CurrentDomain.BaseDirectory;
             var result = Regex.IsMatch("a_A1-", "[^0-9a-zA-Z_]+");
 
@@ -135,11 +132,6 @@ namespace ConsoleAppPrueba
             Console.WriteLine(CultureResources.StringResource.StringTest);
         }
 
-        static (string, int) MetodoTuple(string texto)
-        {
-            return (texto, texto.Length);
-        }
-
         #endregion
 
         #region Prueba02() // Lambda expression // Delegados // Linq // Expression<Func<>> // Xml)
@@ -190,6 +182,7 @@ namespace ConsoleAppPrueba
                 new Teacher {First="Mario", Last="Santos", City = "Cali"},
                 new Teacher {First="Mauricio", Last="Gomez", City = "Medellin"}
             };
+
             Console.WriteLine("The following students and teachers:");
             var peopleInCali = (from student in students
                 where student.City == "Cali"
