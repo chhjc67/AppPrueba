@@ -161,7 +161,7 @@ namespace ConsoleAppPrueba
                     Scores= new List<int> {88, 94, 65, 91}},
                 new Student {First="Fabiola",
                     Last="Botelo",
-                    Street="Av San",
+                    Street="Av San Antonio",
                     City="Cali",
                     Scores= new List<int> {88, 94, 65, 91}},
                 new Student {First = "Diana",
@@ -183,22 +183,25 @@ namespace ConsoleAppPrueba
                 new Teacher {First="Mauricio", Last="Gomez", City = "Medellin"}
             };
 
-            Console.WriteLine("The following students and teachers:");
+            int length = students.Max(u => u.Street.Length);
+            Console.WriteLine($"Colección 'students' la maxima longitud de la propiedad street es de {length}");
+            Console.WriteLine("-----------");
+
             var peopleInCali = (from student in students
                 where student.City == "Cali"
                 select new { student.First, student.Last })
                 .Concat(from teacher in teachers
                         where teacher.City == "Cali"
                         select new { teacher.First, teacher.Last });
-
             XElement peopleToXML = new XElement("root", from people in peopleInCali
                 select new XElement("people",
                             new XAttribute("First", people.First),
                             new XAttribute("Last", people.Last)));
+            Console.WriteLine("The following students and teachers:");
             Console.WriteLine(peopleToXML);
             Console.WriteLine("-----------");
             XElement studentsToXML = new XElement("root", from student in students
-                let x = String.Format("{0}, {1}, {2}, {3}", student.Scores[0], student.Scores[1], student.Scores[2], student.Scores[3])
+                let x = $"{student.Scores[0]}, {student.Scores[1]}, {student.Scores[2]}, {student.Scores[3]}"
                 select new XElement("student",
                             new XElement("First", student.First),
                             new XElement("Last", student.Last),
@@ -217,7 +220,7 @@ namespace ConsoleAppPrueba
             try
             {
                 var path = Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).FullName).FullName;
-                var textReader = new XmlTextReader(String.Format("{0}\\Test.xml", path));
+                var textReader = new XmlTextReader($"{path}\\Test.xml");
                 XDocument docXml1 = XDocument.Load(textReader);
                 Console.WriteLine(docXml1);
             }
@@ -966,7 +969,7 @@ namespace ConsoleAppPrueba
 
         public override string ToString()
         {
-            return String.Format("Label:{0}  Volumen:{1} oz. Potencia:{2}% ABV Precio:{3:C}", Label, Volume, Potency, Price);
+            return $"Label:{Label}  Volumen:{Volume} oz. Potencia:{Potency}% ABV Precio:{Price:C}";
         }
     }
 
@@ -1090,8 +1093,7 @@ namespace ConsoleAppPrueba
         public List<Quote> Quotes { get; set; }
         public override string ToString()
         {
-            return String.Format("Ticker: {0} Shares: {1} Price (Min:{2} Max:{3})",
-                Ticker, Shares, Quotes.Min(q => q.Price), Quotes.Max(q => q.Price));
+            return $"Ticker:{Ticker} Shares:{Shares} Price (Min:{Quotes.Min(q => q.Price)} Max:{Quotes.Max(q => q.Price)})";
         }
     }
 
@@ -1220,7 +1222,7 @@ namespace ConsoleAppPrueba
             set
             {
                 if (Regex.IsMatch(value, @"\d{9}"))
-                    this.uniqueSsn = String.Format("{0}-{1}-{2}", value.Substring(0, 3), value.Substring(3, 2), value.Substring(5, 4));
+                    this.uniqueSsn = $"{value.Substring(0, 3)}-{value.Substring(3, 2)}-{value.Substring(5, 4)}";
                 else if (Regex.IsMatch(value, @"\d{3}-\d{2}-\d{3}"))
                     this.uniqueSsn = value;
                 else
@@ -1286,7 +1288,7 @@ namespace ConsoleAppPrueba
                 Thread.Sleep(TimeSpan.FromSeconds(2));
             }
             threadId = Thread.CurrentThread.ManagedThreadId;
-            return String.Format("Resultado: {0}:{1}", DateTime.Now.Minute, DateTime.Now.Second);
+            return $"Resultado: {DateTime.Now.Minute}:{DateTime.Now.Second}";
         }
     }
 
