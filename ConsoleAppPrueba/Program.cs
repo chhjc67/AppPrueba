@@ -37,8 +37,8 @@ namespace ConsoleAppPrueba
 
         static void Main(string[] args)
         {
-            //Prueba01();
-            Prueba02();
+            Prueba01();
+            //Prueba02();
             //Prueba03();
             //Prueba04();
             //Prueba05();
@@ -50,8 +50,10 @@ namespace ConsoleAppPrueba
         #region Prueba01() // Definición de variable
         static void Prueba01() 
         {
-            var pathBase = AppDomain.CurrentDomain.BaseDirectory;
             var result = Regex.IsMatch("a_A1-", "[^0-9a-zA-Z_]+");
+            string output = String.Join(" ", GetAlphabet(true).Where(letter =>
+                     letter.CompareTo("K") >= 0));
+            Console.WriteLine(output);
 
             HashSet<Person> employee = new HashSet<Person>()
             {
@@ -899,6 +901,15 @@ namespace ConsoleAppPrueba
             canvas.EndText();
             //Close document
             pdf.Close();
+        }
+
+        private static List<string> GetAlphabet(bool upper)
+        {
+            List<string> alphabet = new List<string>();
+            int charValue = upper ? 65 : 97;
+            for (int ctr = 0; ctr <= 25; ctr++)
+                alphabet.Add(((char)(charValue + ctr)).ToString());
+            return alphabet;
         }
     }
 
