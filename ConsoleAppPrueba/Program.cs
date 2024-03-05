@@ -50,6 +50,13 @@ namespace ConsoleAppPrueba
         #region Prueba01() // Definición de variable
         static void Prueba01() 
         {
+            var x1 = 120;
+            var y1 = 150;
+            var u1 = 340;
+            FormattableString formattable1 = $"x1:{x1} y1:{y1}";
+            FormattableString formattable2 = $"{formattable1} u1:{u1}";
+            var par = formattable2.GetArguments();
+
             var result = Regex.IsMatch("a_A1-", "[^0-9a-zA-Z_]+");
             string output = String.Join(" ", GetAlphabet(true).Where(letter =>
                      letter.CompareTo("K") >= 0));
