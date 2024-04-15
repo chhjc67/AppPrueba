@@ -32,12 +32,12 @@ namespace ConsoleAppPrueba
 {
     class Program
     {
-        public static readonly string DEST1 = "D:/Download/Results/Documento1.pdf";
-        public static readonly string DEST2 = "D:/Download/Results/Documento2.pdf";
+        public static readonly string DEST1 = "C:\\Users\\Juan\\Downloads\\Documento1.pdf";
+        public static readonly string DEST2 = "C:\\Users\\Juan\\Downloads\\Documento2.pdf";
 
         static void Main(string[] args)
         {
-            Prueba01();
+            //Prueba01();
             //Prueba02();
             //Prueba03();
             //Prueba04();
@@ -70,6 +70,7 @@ namespace ConsoleAppPrueba
                 new Person("Nassy", "254250352", 150)
             };
 
+            //ver: https://code-maze.com/csharp-get-list-of-properties/
             foreach (var item in employee)
                 foreach(var prop in item.GetType().GetProperties())
                     Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(item, null));
@@ -555,7 +556,8 @@ namespace ConsoleAppPrueba
         }
         #endregion
 
-        #region Prueba03() // Operaciones asincrónicas
+        #region Prueba03() // Delegate
+        // https://www.youtube.com/watch?v=WqXgl8EZzcs
         // The delegate must have the same signature as the method
         // it will call asynchronously.
         delegate string AsyncMethodCaller(TimeSpan callDuration, out int threadId);
@@ -566,7 +568,7 @@ namespace ConsoleAppPrueba
             AsyncDemo asyncDemo = new AsyncDemo();
             // Create the delegate.
             AsyncMethodCaller caller = new AsyncMethodCaller(asyncDemo.TestMethod);
-            IAsyncResult asyncResult = caller.BeginInvoke(TimeSpan.FromSeconds(15), out threadId, null, null);
+            IAsyncResult asyncResult = caller.BeginInvoke(TimeSpan.FromSeconds(10), out threadId, null, null);
             Console.WriteLine("Tarea en ejecución: {0}:{1}  Main thread {2} does some work Id {3}",
                 DateTime.Now.Minute, DateTime.Now.Second, Thread.CurrentThread.ManagedThreadId, threadId );
             // Espere a que el WaitHandle se señalice
@@ -586,7 +588,6 @@ namespace ConsoleAppPrueba
             asyncResult.AsyncWaitHandle.Close();
 
             Console.WriteLine("{0}  Call executed on thread {1}", result, threadId);
-            Console.WriteLine("===========================");
             Console.ReadLine();
         }
         #endregion
@@ -603,20 +604,16 @@ namespace ConsoleAppPrueba
             Console.ReadLine();
             Console.Clear();
 
-            Parallel.For(0, 40, i =>
-            {
-                Console.WriteLine("i(1)= {0}", i);
-            });
+            Parallel.For(0, 20, i => { Console.WriteLine("i(1)= {0}", i); });
             var options = new ParallelOptions { MaxDegreeOfParallelism = 4 };
-            Parallel.For(0, 40, options, i =>
+            Parallel.For(0, 20, options, i => { Console.WriteLine("i(2)= {0}", i); });
+            Parallel.For(0, 50, options, (i, loop) =>
             {
-                Console.WriteLine("i(2)= {0}", i);
-            });
-            Parallel.For(0, 100, options, (i, loop) =>
-            {
-                Console.WriteLine("i(3)= {0}", i);
                 if (i == 20)
+                {
                     loop.Break();
+                }
+                Console.WriteLine("i(3)= {0}", i);
             });
             Console.WriteLine("completed");
             Console.ReadLine();
@@ -650,7 +647,7 @@ namespace ConsoleAppPrueba
                 });
                 Task<string[]> child2 = Task<string[]>.Factory.StartNew(() =>
                 {
-                    string path = @"C:\Users\chhjc\source\repos\chhjc67";
+                    string path = @"C:\Users\Juan\source\repos";
                     string[] files = System.IO.Directory.GetFiles(path);
                     var result = (from file in files.AsParallel()
                                     let info = new System.IO.FileInfo(file)
@@ -705,7 +702,6 @@ namespace ConsoleAppPrueba
         static void Prueba04A()
         {
             int[] nums = Enumerable.Range(0, 100000).ToArray();
-            //int[] nums = { 100, 1000, 10000, 10, 1 };
             long total = 0;
             // Use type parameter to make subtotal a long, not an int
             Parallel.For<long>(0, nums.Length, () => 0, (j, loop, subtotal) =>
@@ -713,20 +709,19 @@ namespace ConsoleAppPrueba
                 subtotal += nums[j];
                 return subtotal;
             }, (finalResult) => Interlocked.Add(ref total, finalResult));
-            Console.WriteLine("For-The total is {0:N0}", total);
+            Console.WriteLine("Parallel.For: Total {0:N0}", total);
         }
 
         static void Prueba04B()
         {
             int[] nums = Enumerable.Range(0, 100000).ToArray();
-            //int[] nums = { 100, 1000, 10000, 10, 1 };
             long total = 0;
             Parallel.ForEach<int, long>(nums, () => 0, (j, loop, subtotal) =>
             {
                 subtotal += j;
                 return subtotal;
             }, (finalResult) => Interlocked.Add(ref total, finalResult));
-            Console.WriteLine("ForEach-The total is {0:N0}", total);
+            Console.WriteLine("Parallel.ForEach: Total {0:N0}", total);
         }
 
         static void Prueba04C()
@@ -737,7 +732,7 @@ namespace ConsoleAppPrueba
             {
                 total += nums[ii];
             }
-            Console.WriteLine("The total is {0:N0}", total);
+            Console.WriteLine("for: Total {0:N0}", total);
         }
 
         static void Prueba04D(object stateObject)
@@ -759,7 +754,7 @@ namespace ConsoleAppPrueba
         {
             int iSum = 0;
             int iSumInpar = 0;
-            int iDigit = 0;
+            int iDigit;
             string EAN = "123456789041";
             EAN = EAN.PadLeft(17, '0');
             for (int i = EAN.Length; i >= 1; i--)
@@ -1299,12 +1294,8 @@ namespace ConsoleAppPrueba
     {
         public string TestMethod(TimeSpan callDuration, out int threadId)
         {
-            Console.WriteLine("TestMethod begins.");
-            for (int ii = 10; ii <= 16; ii++)
-            {
-                Console.WriteLine("TestMethod =>: {0}", ii);
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-            }
+            Console.WriteLine("TestMethod begins...");
+            Thread.Sleep(callDuration);
             threadId = Thread.CurrentThread.ManagedThreadId;
             return $"Resultado: {DateTime.Now.Minute}:{DateTime.Now.Second}";
         }
