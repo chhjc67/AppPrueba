@@ -38,7 +38,7 @@ namespace ConsoleAppPrueba
         static void Main(string[] args)
         {
             //Prueba01();
-            //Prueba02();
+            Prueba02();
             //Prueba03();
             //Prueba04();
             //Prueba05();
@@ -61,6 +61,10 @@ namespace ConsoleAppPrueba
             string output = String.Join(" ", GetAlphabet(true).Where(letter =>
                      letter.CompareTo("K") >= 0));
             Console.WriteLine(output);
+
+            Regex rgx = new Regex("[^a-zA-Z0-9]");
+            string value = rgx.Replace(" Abc-12 35*", "").Trim();
+
 
             HashSet<Person> employee = new HashSet<Person>()
             {
@@ -193,10 +197,6 @@ namespace ConsoleAppPrueba
                 new Teacher {First="Mauricio", Last="Gomez", City = "Medellin"}
             };
 
-            int length = students.Max(u => u.Street.Length);
-            Console.WriteLine($"Colección 'students' la maxima longitud de la propiedad street es de {length}");
-            Console.WriteLine("-----------");
-
             var peopleInCali = (from student in students
                 where student.City == "Cali"
                 select new { student.First, student.Last })
@@ -207,9 +207,6 @@ namespace ConsoleAppPrueba
                 select new XElement("people",
                             new XAttribute("First", people.First),
                             new XAttribute("Last", people.Last)));
-            Console.WriteLine("The following students and teachers:");
-            Console.WriteLine(peopleToXML);
-            Console.WriteLine("-----------");
             XElement studentsToXML = new XElement("root", from student in students
                 let x = $"{student.Scores[0]}, {student.Scores[1]}, {student.Scores[2]}, {student.Scores[3]}"
                 select new XElement("student",
@@ -220,13 +217,29 @@ namespace ConsoleAppPrueba
                             new XElement("Scores", x)));
             studentsToXML.Add(peopleToXML.Elements("people"));
             Console.WriteLine(studentsToXML);
-            Console.WriteLine("-----------");
+            Console.WriteLine("--------------");
             IEnumerable<XElement> studentXML = from nn in studentsToXML.Elements("student")
-                where ((string)nn.Element("First")).Contains("An")
-                select nn;
+                                               where ((string)nn.Element("First")).Contains("An")
+                                               select nn;
             foreach (XElement nn in studentXML)
                 Console.WriteLine(nn);
-            Console.WriteLine("-----------");
+            Console.WriteLine("--------------");
+            var peoples = from s in students
+                          group s by s.City into g
+                          join t in teachers on
+                          g.Key equals t.City
+                          orderby t.City, t.First
+                          select new XElement("Persona",
+                            new XElement("First", t.First),
+                            new XElement("Last", t.Last));
+            // Crear archivo config
+            XDocument doc = new XDocument(
+                new XComment("Summarized Incoming Call Stats"),
+                new XElement("contacts", peoples));
+            Console.WriteLine(doc);
+            Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("--- Reader Test.xml ---");
             try
             {
                 var path = Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).FullName).FullName;
@@ -238,51 +251,19 @@ namespace ConsoleAppPrueba
             {
                 Console.WriteLine(ex.Message);
             }
-            Console.WriteLine("-----------");
-            IEnumerable<Student> collect = 
-                from e in studentsToXML.Elements("student")
-                select new Student
-                {
-                    First = (string)e.Attribute("First"),
-                    Last = (string)e.Attribute("Last"),
-                };
             Console.ReadLine();
             Console.Clear();
 
             IEnumerable<int> num = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             decimal promedio = num.Aggregate(0, (rr, ii) => rr + ii, rr => (decimal)rr / num.Count());
-            //Delegados
+            Console.WriteLine($"Promedio {promedio}");
             int[] result = Array.FindAll<int>(num.ToArray(), delegate(int x) { return x % 2 != 0; });
-            Console.WriteLine("Resultado: " + String.Join(", ", result));
-            Console.WriteLine("--------");
-            //Expression Lambda
+            Console.WriteLine($"Delegate: {String.Join(", ", result)}");
             result = Array.FindAll(num.ToArray(), x => x % 2 != 0);
-            Console.WriteLine("Resultado: " + String.Join(", ", result));
-            Console.WriteLine("--------");
-            //Expression Linq / Lambda
-            foreach (int i in num.Where(x => x % 2 != 0))
-                Console.WriteLine("Resultado: {0}:", i);
-            Console.WriteLine("--------");
-            var pares = from n in num
-                        where n % 2 != 0
-                        select n;
-            foreach (int i in pares)
-                Console.WriteLine("Resultado: {0}:", i);
+            Console.WriteLine($"Expression Lambda: {String.Join(", ", result)}");
             Console.WriteLine("--------");
             foreach (var item in num.TakeWhile(x => x < 5))
                 Console.WriteLine("Resultado: {0}", item);
-            Console.WriteLine("--------");
-            var peoples = from s in students
-                          group s by s.City into g
-                          join t in teachers on
-                          g.Key equals t.City
-                          orderby t.City, t.First
-                          select new XElement("Persona",
-                            new XElement("First", t.First),
-                            new XElement("Last", t.Last));
-            XDocument doc = new XDocument(
-                new XComment("Summarized Incoming Call Stats"),
-                new XElement("contacts", peoples));
             Console.ReadLine();
             Console.Clear();
 
@@ -487,6 +468,7 @@ namespace ConsoleAppPrueba
                                          select datos;
             foreach (DataRow _fila in query)
                 Console.WriteLine("First: {0}  Last: {1}", _fila.Field<string>("First"), _fila.Field<string>("Last"));
+            _studentDS.WriteXml("C:\\Users\\Juan\\Downloads\\Dataset.xml");
             Console.ReadLine();
             Console.Clear();
 
