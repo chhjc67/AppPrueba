@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impresion ticket", "Impresi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsService", "WindowsService\WindowsService.csproj", "{BD585803-3522-44CB-8197-BDC00CADB171}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDLCDesign", "RDLCDesign\RDLCDesign.csproj", "{796F380B-8B80-4A9C-97F3-1AB8D122922A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,24 +67,6 @@ Global
 		{BD585803-3522-44CB-8197-BDC00CADB171}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BD585803-3522-44CB-8197-BDC00CADB171}.Release|x86.ActiveCfg = Release|x86
 		{BD585803-3522-44CB-8197-BDC00CADB171}.Release|x86.Build.0 = Release|x86
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Debug|x86.Build.0 = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.DebugLocal|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.DebugLocal|Mixed Platforms.Build.0 = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.DebugLocal|x86.ActiveCfg = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.DebugLocal|x86.Build.0 = Debug|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Release|x86.ActiveCfg = Release|Any CPU
-		{796F380B-8B80-4A9C-97F3-1AB8D122922A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
