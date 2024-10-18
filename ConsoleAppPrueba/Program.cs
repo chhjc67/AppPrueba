@@ -203,10 +203,15 @@ namespace ConsoleAppPrueba
                 .Concat(from teacher in teachers
                         where teacher.City == "Cali"
                         select new { teacher.First, teacher.Last });
-            XElement peopleToXML = new XElement("root", from people in peopleInCali
+            IEnumerable<Guid> list = new List<Guid>() { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+            XElement peopleToXML = new XElement("root",
+                from people in peopleInCali
                 select new XElement("people",
                             new XAttribute("First", people.First),
-                            new XAttribute("Last", people.Last)));
+                            new XAttribute("Last", people.Last)),
+                from item in list
+                select new XElement("TGuid",
+                    new XAttribute("Guid", item)));
             XElement studentsToXML = new XElement("root", from student in students
                 let x = $"{student.Scores[0]}, {student.Scores[1]}, {student.Scores[2]}, {student.Scores[3]}"
                 select new XElement("student",
