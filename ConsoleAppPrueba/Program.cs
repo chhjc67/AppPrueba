@@ -197,6 +197,8 @@ namespace ConsoleAppPrueba
                 new Teacher {First="Mauricio", Last="Gomez", City = "Medellin"}
             };
 
+            var distinct = students.Distinct(new StudentComparer()).ToList();
+
             var peopleInCali = (from student in students
                 where student.City == "Cali"
                 select new { student.First, student.Last })
@@ -1295,6 +1297,39 @@ namespace ConsoleAppPrueba
         public System.Threading.Timer TimerReference;
         public bool TimerCanceled;
     }
+
+    class StudentComparer : IEqualityComparer<Student>
+    {
+        // Products are equal if their names and product numbers are equal.
+        public bool Equals(Student x, Student y)
+        {
+            //Check whether the compared objects reference the same data.
+            if (Object.ReferenceEquals(x, y)) return true;
+
+            //Check whether any of the compared objects is null.
+            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+                return false;
+
+            //Check whether the products' properties are equal.
+            return x.City == y.City;
+        }
+
+        // If Equals() returns true for a pair of objects
+        // then GetHashCode() must return the same value for these objects.
+
+        public int GetHashCode(Student student)
+        {
+            //Check whether the object is null
+            if (Object.ReferenceEquals(student, null)) return 0;
+
+            //Get hash code for the Name field if it is not null.
+            int hashCity = student.City == null ? 0 : student.City.GetHashCode();
+
+            //Calculate the hash code for the product.
+            return hashCity;
+        }
+    }
+
 
     #region Clase de la Prueba08
     class GeneratedClass
