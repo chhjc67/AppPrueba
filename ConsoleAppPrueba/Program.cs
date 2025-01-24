@@ -38,13 +38,13 @@ namespace ConsoleAppPrueba
         static void Main(string[] args)
         {
             //Prueba01();
-            Prueba02();
+            //Prueba02();
             //Prueba03();
             //Prueba04();
             //Prueba05();
             //Prueba06();
             //Prueba07();
-            //Prueba08();
+            Prueba08();
         }
 
         #region Prueba01() // Definición de variable
@@ -837,8 +837,10 @@ namespace ConsoleAppPrueba
         {
             GeneratedClass x = new GeneratedClass();
             x.CreateDocument("D:\\Test1.xlsx");
+            /// https://www.youtube.com/watch?v=oqUxS_i1dkY
             ReportWithChart y = new ReportWithChart();
             y.CreateDocument("D:\\Test2.xlsx");
+            Console.WriteLine("Excel file 'D:\\test1.xlsx, D:\\text2.xlsx' created successfully.");
         }
 
         private void ManipulatePdf(String dest)
@@ -1353,7 +1355,9 @@ namespace ConsoleAppPrueba
                 sheets.Append(sheet1);
                 sheets.Append(sheet2);
                 workbookPart.Workbook.Save();
-                TestContent1(worksheetPart1);
+                int count  = TestContent1(worksheetPart1);
+                AutoFilter autoFilter = new AutoFilter() { Reference = $"B1:D{count}" };
+                worksheetPart1.Worksheet.Append(autoFilter);
                 worksheetPart1.Worksheet.Save();
                 TestContent2(worksheetPart2);
                 worksheetPart2.Worksheet.Save();
@@ -1377,7 +1381,7 @@ namespace ConsoleAppPrueba
                 new Font(new FontSize() { Val = 10 }), // Index 0 - default
                 new Font(new FontSize() { Val = 10 },
                     new Bold(),
-                    new Color() { Rgb = "000000" }) // Index 1 - header
+                    new DocumentFormat.OpenXml.Office2010.Excel.Color() { Rgb = "000000" }) // Index 1 - header
                 );
             Fills fills = new Fills(
                 new Fill(new PatternFill() { PatternType = PatternValues.None }), // Index 0 - default
@@ -1390,10 +1394,10 @@ namespace ConsoleAppPrueba
             Borders borders = new Borders(
                     new Border(), // index 0 default
                     new Border( // index 1 black border
-                        new LeftBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                        new RightBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                        new TopBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                        new BottomBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new LeftBorder(new DocumentFormat.OpenXml.Office2010.Excel.Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new RightBorder(new DocumentFormat.OpenXml.Office2010.Excel.Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new TopBorder(new DocumentFormat.OpenXml.Office2010.Excel.Color() { Auto = true }) { Style = BorderStyleValues.Thin },
+                        new BottomBorder(new DocumentFormat.OpenXml.Office2010.Excel.Color() { Auto = true }) { Style = BorderStyleValues.Thin },
                         new DiagonalBorder())
                 );
             CellFormats cellFormats = new CellFormats(
@@ -1424,7 +1428,7 @@ namespace ConsoleAppPrueba
             };
         }
 
-        private void TestContent1(WorksheetPart worksheetPart)
+        private int TestContent1(WorksheetPart worksheetPart)
         {
             // Setting up columns
             Columns columns = new Columns(
@@ -1481,6 +1485,8 @@ namespace ConsoleAppPrueba
                 sheetData.AppendChild(row);
                 count++;
             }
+
+            return count;
         }
 
         private void TestContent2(WorksheetPart worksheetPart)
@@ -1792,6 +1798,12 @@ namespace ConsoleAppPrueba
             }
         }
     }
+
+    //public class DataPoint
+    //{
+    //    public string Group { get; set; }
+    //    public double Value { get; set; }
+    //}
 
     //public class CustomStylesheet : Stylesheet
     //{
