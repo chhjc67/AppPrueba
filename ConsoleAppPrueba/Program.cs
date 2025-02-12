@@ -1364,9 +1364,9 @@ namespace ConsoleAppPrueba
             }
         }
 
-        private DocumentFormat.OpenXml.Spreadsheet.Cell ConstructCell(string value, CellValues dataType, uint styleIndex = 0)
+        private Cell ConstructCell(string value, CellValues dataType, uint styleIndex = 0)
         {
-            return new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            return new Cell()
             {
                 CellValue = new CellValue(value),
                 DataType = new EnumValue<CellValues>(dataType),
@@ -1493,19 +1493,19 @@ namespace ConsoleAppPrueba
         {
             SheetData sheetData = worksheetPart.Worksheet.AppendChild(new SheetData());
             Row row1 = new Row();
-            DocumentFormat.OpenXml.Spreadsheet.Cell cell1 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            Cell cell1 = new Cell()
             {
                 CellReference = "A1",
                 DataType = CellValues.String,
                 CellValue = new CellValue("Valor 1")
             };
-            DocumentFormat.OpenXml.Spreadsheet.Cell cell2 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            Cell cell2 = new Cell()
             {
                 CellReference = "B1",
                 DataType = CellValues.String,
                 CellValue = new CellValue("Valor 2"),
             };
-            DocumentFormat.OpenXml.Spreadsheet.Cell cell3 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            Cell cell3 = new Cell()
             {
                 CellReference = "C1",
                 DataType = CellValues.String,
@@ -1514,19 +1514,19 @@ namespace ConsoleAppPrueba
             row1.Append(cell1, cell2, cell3);
             sheetData.Append(row1);
             row1 = new Row() { RowIndex = 2 };
-            DocumentFormat.OpenXml.Spreadsheet.Cell cell4 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            Cell cell4 = new Cell()
             {
                 CellReference = "A2",
                 DataType = CellValues.Number,
                 CellValue = new CellValue("2500.5")
             };
-            DocumentFormat.OpenXml.Spreadsheet.Cell cell5 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            Cell cell5 = new Cell()
             {
                 CellReference = "B2",
                 DataType = CellValues.Number,
                 CellValue = new CellValue("528")
             };
-            DocumentFormat.OpenXml.Spreadsheet.Cell cell6 = new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            Cell cell6 = new Cell()
             {
                 CellReference = "C2",
                 DataType = CellValues.Number,
@@ -1735,9 +1735,9 @@ namespace ConsoleAppPrueba
             }
         }
 
-        private DocumentFormat.OpenXml.Spreadsheet.Cell ConstructCell(string value, CellValues dataType)
+        private Cell ConstructCell(string value, CellValues dataType)
         {
-            return new DocumentFormat.OpenXml.Spreadsheet.Cell()
+            return new Cell()
             {
                 CellValue = new CellValue(value),
                 DataType = new EnumValue<CellValues>(dataType),
@@ -1790,20 +1790,14 @@ namespace ConsoleAppPrueba
                 _employees.Add(new Employee()
                 {
                     Id = i,
-                    Name = "Employee " + i,
-                    DOB = new DateTime(1999, 1, 1).AddMonths(i),
+                    Name = $"Employee {i}",
+                    DOB = new DateTime(2001, 1, 1).AddMonths(i),
                     Salary = random.Next(100, 10000) + 0.5m,
                     Values = (i % 2 == 0 ? new byte[] { 10, 25, 30, 15, 20, 19 } : new byte[] { 20, 15, 26, 30, 10, (byte)random.Next(1, 20) })
                 });
             }
         }
     }
-
-    //public class DataPoint
-    //{
-    //    public string Group { get; set; }
-    //    public double Value { get; set; }
-    //}
 
     //public class CustomStylesheet : Stylesheet
     //{
